@@ -5,7 +5,7 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedE
 
 
 public class BotEvents {
-
+    BotCommandHandler commandHandler = new BotCommandHandler();
 
     @EventSubscriber
     public void onMessageReceived(MessageReceivedEvent event) {
@@ -22,7 +22,7 @@ public class BotEvents {
             case "$help":
                 break;
             case "$StartOpenbet":
-
+                commandHandler.startOpenBet(event);
                 break;
             case "$stopbet":
                 BotUtils.sendMessage(event.getChannel(), "stopbet command received");

@@ -17,6 +17,8 @@ public abstract class Bet {
     private List<User> winners;
 
     Bet(User creater, String title) {
+        //todo iets van een ID systeem enzo.
+        id = 1;
         participants = new ArrayList<>();
         referees = new ArrayList<>();
         createDate = new Date();
@@ -108,5 +110,9 @@ public abstract class Bet {
             participants.remove(participant);
         }
         return participants;
+    }
+
+    public long getId() {
+        return id;
     }
 }
