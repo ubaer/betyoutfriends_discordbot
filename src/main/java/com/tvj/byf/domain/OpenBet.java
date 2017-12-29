@@ -1,8 +1,10 @@
 package com.tvj.byf.domain;
 
-public class OpenBet extends Bet {
+import javax.persistence.Entity;
 
-    public OpenBet(User creater, String title) {
+@Entity
+public class OpenBet extends Bet {
+    public OpenBet(User creater, String title, String a) {
         super(creater, title);
     }
 }
