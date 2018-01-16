@@ -1,6 +1,7 @@
 package com.tvj.byf.domain;
 
 import org.hibernate.annotations.Cascade;
+import sx.blah.discord.handle.obj.IMessage;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -13,13 +14,8 @@ public abstract class Bet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @ManyToOne(fetch=FetchType.LAZY)
-    @Cascade({org.hibernate.annotations.CascadeType.ALL})
     private User creater;
     @ManyToMany()
-    @Cascade({org.hibernate.annotations.CascadeType.ALL})
-    private List<User> participants;
-    @ManyToMany()
-    @Cascade({org.hibernate.annotations.CascadeType.ALL})
     private List<User> referees;
     private Date createDate;
     private String title;
@@ -27,29 +23,24 @@ public abstract class Bet {
     private BetStatus status;
     private Date betDeadline;
     @ManyToMany()
-    @Cascade({org.hibernate.annotations.CascadeType.ALL})
     private List<User> winners;
+    private long originalMessageId;
 
-    Bet(User creater, String title) {
+    protected Bet(User creater, String title) {
         winners = new ArrayList<>();
-        participants = new ArrayList<>();
         referees = new ArrayList<>();
         createDate = new Date();
         this.creater = creater;
         this.title = title;
         this.description = "";
-        this.status = status;
+        this.status = BetStatus.Open;
     }
 
-    Bet() {
+    protected Bet() {
     }
 
     public User getCreater() {
         return creater;
-    }
-
-    public List<User> getParticipants() {
-        return participants;
     }
 
     public List<User> getReferees() {
@@ -114,21 +105,15 @@ public abstract class Bet {
         return referees;
     }
 
-    public List<User> addParticipant(User participant) {
-        if (!participants.contains(participant)) {
-            participants.add(participant);
-        }
-        return participants;
-    }
-
-    public List<User> removeParticipant(User participant) {
-        if (participants.contains(participant)) {
-            participants.remove(participant);
-        }
-        return participants;
-    }
-
     public long getId() {
         return id;
+    }
+
+    public void setOriginalMessageId(long originalMessageId) {
+        this.originalMessageId = originalMessageId;
+    }
+
+    public long getOriginalMessageId() {
+        return originalMessageId;
     }
 }
