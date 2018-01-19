@@ -44,7 +44,7 @@ public class BotEvents {
 
     @EventSubscriber
     public void onReactionRemove(ReactionRemoveEvent event) {
-        System.out.println("reaction removed event called");
+        commandHandler.reactionRemoved(event);
     }
 
     private void handleMessage(String message, MessageReceivedEvent event) {

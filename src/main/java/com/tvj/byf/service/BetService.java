@@ -2,14 +2,11 @@ package com.tvj.byf.service;
 
 import com.tvj.byf.dao.BetJPA;
 import com.tvj.byf.dao.OpenbetJPA;
-import com.tvj.byf.dao.YesNobetJPA;
 import com.tvj.byf.domain.*;
 import com.tvj.byf.domain.YesNoBet.YesNoBet;
 import com.tvj.byf.domain.YesNoBet.YesNoBetHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
-import sx.blah.discord.handle.obj.IMessage;
 
 import javax.transaction.Transactional;
 
@@ -38,11 +35,15 @@ public class BetService {
     }
 
     public void addYesNoVote(Long originalMessageId, User voter, Boolean vote) {
-        yesNoBetHandler.addVoteYesNoBet(originalMessageId, voter, vote);
+        yesNoBetHandler.addVote(originalMessageId, voter, vote);
     }
 
     public YesNoBet startYesNoBet(User author, String betTitle) {
         return yesNoBetHandler.startYesNoBet(author, betTitle);
+    }
+
+    public void removeYesNoVote(Long originalMessageId, User voter){
+        yesNoBetHandler.removeVote(originalMessageId, voter);
     }
 
     public void updateBet(Bet bet) {

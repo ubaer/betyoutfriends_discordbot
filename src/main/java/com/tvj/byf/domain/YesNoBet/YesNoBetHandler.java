@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
 
 import javax.transaction.Transactional;
+import java.util.Optional;
 
 /**
  * Created by Uber on 16-1-2018. betyoutfriends_discordbot
@@ -26,23 +27,21 @@ public class YesNoBetHandler {
         return yesNobetJPA.findOne(id);
     }
 
-
-    public void yesNoReactionAdded(ReactionAddEvent event) {
-
-    }
-
     public YesNoBet startYesNoBet(User creater, String title) {
         YesNoBet bet = new YesNoBet(creater, title);
         bet = yesNobetJPA.save(bet);
         return bet;
     }
 
-    public void addVoteYesNoBet(long originalBetMessageId, User user, Boolean answer) {
+    public void addVote(long originalBetMessageId, User user, Boolean answer) {
         YesNoBet bet = yesNobetJPA.findByOriginalMessageId(originalBetMessageId);
+        bet.addVote(user, answer);
+        yesNobetJPA.save(bet);
+    }
 
-        if(bet.getStatus().equals(BetStatus.Open)){
-            bet.addVote(user, answer);
-        }
-
+    public void removeVote(Long originalBetMessageId, User voter) {
+        YesNoBet bet = yesNobetJPA.findByOriginalMessageId(originalBetMessageId);
+        bet.removeVote(voter);
+        yesNobetJPA.save(bet);
     }
 }

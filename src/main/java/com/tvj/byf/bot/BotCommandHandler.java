@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionRemoveEvent;
 import sx.blah.discord.handle.impl.obj.ReactionEmoji;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IReaction;
@@ -18,6 +19,7 @@ import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.MessageHistory;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -70,10 +72,10 @@ class BotCommandHandler {
 //        IReaction yesReaction = createMessage.getReactionByEmoji(ReactionEmoji.of("✅"));
 //        IReaction noReaction = createMessage.getReactionByEmoji(ReactionEmoji.of("\uD83D\uDEAB"));
 //        for (IUser user : yesReaction.getUsers()) {
-//            betService.addVoteYesNoBet(yesNoBet, discordObjectManager.discorduserToUser(user), true);
+//            betService.addVote(yesNoBet, discordObjectManager.discorduserToUser(user), true);
 //        }
 //        for (IUser user : noReaction.getUsers()) {
-//            betService.addVoteYesNoBet(yesNoBet, discordObjectManager.discorduserToUser(user), false);
+//            betService.addVote(yesNoBet, discordObjectManager.discorduserToUser(user), false);
 //        }
     }
 
@@ -114,13 +116,51 @@ class BotCommandHandler {
         }
     }
 
-    private void handleYesNoReactions(ReactionAddEvent event) {
-        ReactionEmoji reaction =  event.getReaction().getEmoji();
+    void reactionRemoved(ReactionRemoveEvent event) {
+        String message = event.getMessage().getContent();
+        String bettype = message.substring(0, message.indexOf(" "));
 
-        if(reaction.equals(ReactionEmoji.of("✅")) || reaction.equals(ReactionEmoji.of("\uD83D\uDEAB"))){
+        switch (bettype) {
+            case "Yes/No":
+                handleYesNoReactionRemoved(event);
+                break;
+            default:
+                BotUtils.sendMessageAsynchrone(event.getChannel(), "wups, something went wrong nigga");
+        }
+    }
+
+    private void handleYesNoReactionRemoved(ReactionRemoveEvent event) {
+        Long messageId = event.getMessageID();
+        ReactionEmoji reaction = event.getReaction().getEmoji();
+        if (reaction.equals(ReactionEmoji.of("✅"))) {
+            User user = discordObjectManager.discorduserToUser(event.getUser());
+            Boolean hasOtherVote = event.getMessage().getReactions().stream().filter(r -> r.getEmoji().equals(ReactionEmoji.of("\uD83D\uDEAB"))).findFirst().get().getUsers().stream().anyMatch(u -> u.getStringID().equals(user.getId()));
+
+            if (hasOtherVote) {
+                betService.addYesNoVote(messageId, user, false);
+            } else {
+                betService.removeYesNoVote(messageId, user);
+            }
+        }
+        if (reaction.equals(ReactionEmoji.of("\uD83D\uDEAB"))) {
+            User user = discordObjectManager.discorduserToUser(event.getUser());
+            Boolean hasOtherVote = event.getMessage().getReactions().stream().filter(r -> r.getEmoji().equals(ReactionEmoji.of("✅"))).findFirst().get().getUsers().stream().anyMatch(u -> u.getStringID().equals(user.getId()));
+
+            if (hasOtherVote) {
+                betService.addYesNoVote(messageId, user, true);
+            } else {
+                betService.removeYesNoVote(messageId, user);
+            }
+        }
+    }
+
+    private void handleYesNoReactions(ReactionAddEvent event) {
+        ReactionEmoji reaction = event.getReaction().getEmoji();
+
+        if (reaction.equals(ReactionEmoji.of("✅")) || reaction.equals(ReactionEmoji.of("\uD83D\uDEAB"))) {
             User voter = discordObjectManager.discorduserToUser(event.getUser());
             Boolean answer = reaction.equals(ReactionEmoji.of("✅"));
-           betService.addYesNoVote(event.getMessage().getLongID(), voter, answer);
+            betService.addYesNoVote(event.getMessage().getLongID(), voter, answer);
         }
     }
 }
