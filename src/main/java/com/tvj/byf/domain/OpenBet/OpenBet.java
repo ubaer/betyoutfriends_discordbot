@@ -1,6 +1,8 @@
-package com.tvj.byf.domain;
+package com.tvj.byf.domain.OpenBet;
 
 import com.tvj.byf.dao.OpenbetJPA;
+import com.tvj.byf.domain.Bet;
+import com.tvj.byf.domain.User;
 
 import javax.persistence.Entity;
 

@@ -1,22 +1,18 @@
 package com.tvj.byf.bot;
 
-import com.tvj.byf.service.BetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageSendEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionRemoveEvent;
-import sx.blah.discord.handle.obj.IMessage;
 
 @Service
 public class BotEvents {
     private final BotCommandHandler commandHandler;
 
     @Autowired
-    public BotEvents(BotCommandHandler commandHandler) {
+    public BotEvents(BotCommandHandler commandHandler, BotMessageCreator messageSender) {
         this.commandHandler = commandHandler;
     }
 
@@ -49,20 +45,40 @@ public class BotEvents {
 
     private void handleMessage(String message, MessageReceivedEvent event) {
         String command = message.replaceAll(" .*", "");
+        String possibleNumber = command.replace("$", "");
+        int betNumber = convertToInt(possibleNumber);
 
+        if (betNumber > 0) {
+            command = "$Set";
+        }
+
+        Boolean commandExecuted = false;
         switch (command) {
             case "$help":
                 commandHandler.help(event);
                 break;
             case "$Y/N":
-                commandHandler.createYesNoBet(event);
+                commandExecuted = commandHandler.createYesNoBet(event);
                 break;
             case "$Set":
-                commandHandler.configureBet(event);
+                commandExecuted = commandHandler.configureBet(betNumber, event);
                 break;
             default:
                 BotUtils.sendMessageAsynchrone(event.getChannel(), "are you retarded? " + command + " isn\'t a command");
                 break;
         }
+        if (commandExecuted) {
+            event.getMessage().delete();
+        }
+    }
+
+    private int convertToInt(String number) {
+        int converted = -1;
+        try {
+            converted = Integer.parseInt(number);
+        } catch (NumberFormatException ignored) {
+
+        }
+        return converted;
     }
 }

@@ -2,6 +2,7 @@ package com.tvj.byf.domain.YesNoBet;
 
 import com.tvj.byf.domain.Bet;
 import com.tvj.byf.domain.BetStatus;
+import com.tvj.byf.domain.BetType;
 import com.tvj.byf.domain.User;
 
 import javax.persistence.CascadeType;
@@ -18,9 +19,10 @@ public class YesNoBet extends Bet {
     @ManyToMany(cascade = {CascadeType.ALL})
     private List<YesNoBetVote> voteList;
 
-    public YesNoBet(User creater, String title) {
+    YesNoBet(User creater, String title) {
         super(creater, title);
         voteList = new ArrayList<>();
+        this.type = BetType.YesNo;
     }
 
     public YesNoBet() {

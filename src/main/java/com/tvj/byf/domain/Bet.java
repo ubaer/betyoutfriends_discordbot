@@ -13,7 +13,7 @@ public abstract class Bet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private User creater;
     @ManyToMany()
     private List<User> referees;
@@ -25,6 +25,9 @@ public abstract class Bet {
     @ManyToMany()
     private List<User> winners;
     private long originalMessageId;
+    protected BetType type;
+
+    private String stakes;
 
     protected Bet(User creater, String title) {
         winners = new ArrayList<>();
@@ -34,6 +37,7 @@ public abstract class Bet {
         this.title = title;
         this.description = "";
         this.status = BetStatus.Open;
+        this.stakes = "";
     }
 
     protected Bet() {
@@ -67,7 +71,7 @@ public abstract class Bet {
         return betDeadline;
     }
 
-    public void setBetDeadline(Date betDeadline) {
+    public void setDeadline(Date betDeadline) {
         this.betDeadline = betDeadline;
     }
 
@@ -105,6 +109,15 @@ public abstract class Bet {
         return referees;
     }
 
+    public String getStakes() {
+        return stakes;
+    }
+
+    public void setStakes(String stakes) {
+        this.stakes = stakes;
+    }
+
+
     public long getId() {
         return id;
     }
@@ -115,5 +128,13 @@ public abstract class Bet {
 
     public long getOriginalMessageId() {
         return originalMessageId;
+    }
+
+    public BetType getType() {
+        return type;
+    }
+
+    public void setType(BetType type) {
+        this.type = type;
     }
 }

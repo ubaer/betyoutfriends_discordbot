@@ -1,6 +1,6 @@
 package com.tvj.byf.dao;
 
-import com.tvj.byf.domain.OpenBet;
+import com.tvj.byf.domain.OpenBet.OpenBet;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;

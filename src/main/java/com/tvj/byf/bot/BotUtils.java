@@ -2,6 +2,7 @@ package com.tvj.byf.bot;
 
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
+import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.util.DiscordException;
@@ -46,5 +47,22 @@ public class BotUtils {
             }
         }).get();
         return returnedMessage[0];
+    }
+
+    static IMessage sendMessageSynchrone(IChannel channel, EmbedObject object) {
+        final IMessage[] returnedMessage = new IMessage[1];
+        RequestBuffer.request(() -> {
+            try {
+                returnedMessage[0] = channel.sendMessage(object);
+            } catch (DiscordException e) {
+                System.err.println("Message could not be sent with error: ");
+                e.printStackTrace();
+            }
+        }).get();
+        return returnedMessage[0];
+    }
+
+    static void updateMessageSynchrone(){
+
     }
 }

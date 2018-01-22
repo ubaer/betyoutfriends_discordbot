@@ -24,15 +24,26 @@ class BotReactionHandler {
             try {
                 message.addReaction(y);
             } catch (RateLimitException e) {
-                System.out.println("Do some logging");
                 throw e; // This makes sure that RequestBuffer will do the retry for you
             }
-        });
+        }).get();
         RequestBuffer.request(() -> {
             try {
                 message.addReaction(n);
             } catch (RateLimitException e) {
-                System.out.println("Do some logging");
+                throw e; // This makes sure that RequestBuffer will do the retry for you
+            }
+        }).get();
+
+    }
+
+    void addReloadReaction(IMessage message) {
+        ReactionEmoji r = ReactionEmoji.of("\uD83D\uDD04");
+
+        RequestBuffer.request(() -> {
+            try {
+                message.addReaction(r);
+            } catch (RateLimitException e) {
                 throw e; // This makes sure that RequestBuffer will do the retry for you
             }
         });

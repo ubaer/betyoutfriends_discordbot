@@ -3,6 +3,7 @@ package com.tvj.byf.service;
 import com.tvj.byf.dao.BetJPA;
 import com.tvj.byf.dao.OpenbetJPA;
 import com.tvj.byf.domain.*;
+import com.tvj.byf.domain.OpenBet.OpenBet;
 import com.tvj.byf.domain.YesNoBet.YesNoBet;
 import com.tvj.byf.domain.YesNoBet.YesNoBetHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,7 @@ public class BetService {
         return yesNoBetHandler.startYesNoBet(author, betTitle);
     }
 
-    public void removeYesNoVote(Long originalMessageId, User voter){
+    public void removeYesNoVote(Long originalMessageId, User voter) {
         yesNoBetHandler.removeVote(originalMessageId, voter);
     }
 
