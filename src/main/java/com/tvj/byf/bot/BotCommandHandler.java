@@ -46,6 +46,11 @@ class BotCommandHandler {
     }
 
     void help(MessageReceivedEvent event) {
+        BotUtils.sendMessageSynchrone(event.getChannel(), messageCreator.createHelpMessage());
+    }
+
+    void helpYesNo(MessageReceivedEvent event) {
+        BotUtils.sendMessageSynchrone(event.getChannel(), messageCreator.createHelpYesNoMessage());
     }
 
     // todo maybe check for the length to see if a title is present
@@ -78,6 +83,11 @@ class BotCommandHandler {
             return false;
         }
 
+        User requester = discordObjectManager.discorduserToUser(event.getAuthor());
+        if(!requester.getId().equals(bet.getCreater().getId())){
+            return false;
+        }
+
         String command = message.substring(message.indexOf(" ") + 1);
         if (command.contains(" ")) {
             // First set message to know which parameters the user has used before formatting the command
@@ -92,6 +102,17 @@ class BotCommandHandler {
             case "Cancel":
                 bet.setStatus(BetStatus.Canceled);
                 break;
+            case "Open":
+                bet.setStatus(BetStatus.Open);
+                break;
+            case "Finish":
+                if(bet.finishBet()){
+                    BotUtils.sendMessageSynchrone(event.getChannel(), messageCreator.finishBet(bet));
+                }
+                else {
+                    BotUtils.sendMessageAsynchrone(event.getChannel(), "Please set an answer before finishing the bet");
+                }
+                break;
             case "Description:":
                 bet.setDescription(message);
                 break;
@@ -103,8 +124,11 @@ class BotCommandHandler {
                     return false;
                 }
                 break;
-            case "Stake":
+            case "Stake:":
                 bet.setStakes(message);
+                break;
+            case "Answer:":
+                bet.setAnswer(message);
                 break;
             default:
                 BotUtils.sendMessageAsynchrone(event.getChannel(), "Did not recognize command '" + command + "'");
@@ -197,4 +221,5 @@ class BotCommandHandler {
         EmbedObject embedObject = messageCreator.createBet(foundBet);
         event.getMessage().edit(embedObject);
     }
+
 }

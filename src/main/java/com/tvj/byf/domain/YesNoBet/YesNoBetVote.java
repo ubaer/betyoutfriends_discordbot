@@ -10,7 +10,10 @@ import javax.persistence.*;
 @Entity
 public class YesNoBetVote {
     @Id
-    long betId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    private long betId;
     @ManyToOne
     private User voter;
     private Boolean vote;

@@ -45,11 +45,12 @@ public class BotEvents {
 
     private void handleMessage(String message, MessageReceivedEvent event) {
         String command = message.replaceAll(" .*", "");
+        command = command.toLowerCase();
         String possibleNumber = command.replace("$", "");
         int betNumber = convertToInt(possibleNumber);
 
         if (betNumber > 0) {
-            command = "$Set";
+            command = "$set";
         }
 
         Boolean commandExecuted = false;
@@ -57,14 +58,17 @@ public class BotEvents {
             case "$help":
                 commandHandler.help(event);
                 break;
-            case "$Y/N":
+            case "$y/n?":
+                commandHandler.helpYesNo(event);
+                break;
+            case "$y/n":
                 commandExecuted = commandHandler.createYesNoBet(event);
                 break;
-            case "$Set":
+            case "$set":
                 commandExecuted = commandHandler.configureBet(betNumber, event);
                 break;
             default:
-                BotUtils.sendMessageAsynchrone(event.getChannel(), "are you retarded? " + command + " isn\'t a command");
+                BotUtils.sendMessageAsynchrone(event.getChannel(),command + " isn\'t a command, use $help for information");
                 break;
         }
         if (commandExecuted) {

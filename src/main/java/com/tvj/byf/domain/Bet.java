@@ -1,9 +1,8 @@
 package com.tvj.byf.domain;
 
-import org.hibernate.annotations.Cascade;
-import sx.blah.discord.handle.obj.IMessage;
-
+import javax.lang.model.util.SimpleElementVisitor6;
 import javax.persistence.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,6 +23,8 @@ public abstract class Bet {
     private Date betDeadline;
     @ManyToMany()
     private List<User> winners;
+    @ManyToMany()
+    private List<User> losers;
     private long originalMessageId;
     protected BetType type;
 
@@ -31,6 +32,7 @@ public abstract class Bet {
 
     protected Bet(User creater, String title) {
         winners = new ArrayList<>();
+        losers = new ArrayList<>();
         referees = new ArrayList<>();
         createDate = new Date();
         this.creater = creater;
@@ -83,6 +85,14 @@ public abstract class Bet {
         this.winners = winners;
     }
 
+    public List<User> getLosers() {
+        return losers;
+    }
+
+    public void setLosers(List<User> losers) {
+        this.losers = losers;
+    }
+
     public void setTitle(String title) {
         this.title = title;
     }
@@ -92,7 +102,9 @@ public abstract class Bet {
     }
 
     public void setStatus(BetStatus status) {
-        this.status = status;
+        if (this.getStatus() != BetStatus.Finished) {
+            this.status = status;
+        }
     }
 
     public List<User> addReferee(User referee) {
@@ -114,9 +126,10 @@ public abstract class Bet {
     }
 
     public void setStakes(String stakes) {
-        this.stakes = stakes;
+        if (this.getStatus() != BetStatus.Finished) {
+            this.stakes = stakes;
+        }
     }
-
 
     public long getId() {
         return id;
@@ -137,4 +150,10 @@ public abstract class Bet {
     public void setType(BetType type) {
         this.type = type;
     }
+
+    public abstract boolean finishBet();
+
+    public abstract void setAnswer(String answer);
+
+    abstract public String getAnswer();
 }

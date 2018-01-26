@@ -13,4 +13,19 @@ public class OpenBet extends Bet {
     }
 
     public OpenBet(){}
+
+    @Override
+    public boolean finishBet() {
+        return false;
+    }
+
+    @Override
+    public void setAnswer(String answer) {
+
+    }
+
+    @Override
+    public String getAnswer() {
+        return null;
+    }
 }
